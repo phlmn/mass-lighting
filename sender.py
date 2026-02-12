@@ -1,8 +1,8 @@
 import network
 import espnow
 import os
-from array import array
 
+import log
 
 def read_setting(name: str, default_value: str | None = None):
     file_name = f"settings/{name}.txt"
@@ -20,22 +20,6 @@ class MsgType:
     CONFIGURE = 3
     DATA = 4
 
-
-class RingCacheU16:
-    def __init__(self, size: int):
-        self.arr = array('H', [0] * size)
-        self.cursor = 0
-
-    def push(self, val: int):
-        self.arr[self.cursor] = val
-
-        if self.cursor >= len(self.arr) - 1:
-            self.cursor = 0
-        else:
-            self.cursor += 1
-
-    def contains(self, val: int):
-        return val in self.arr
 
 def make_msg_header(msg_type: int, network_id: int, package_id: int):
     if package_id == 0:
@@ -124,7 +108,7 @@ class Sender:
             elif msg_type == MsgType.CONFIGURE:
                 self._handle_configure_msg(mac, msg_body)
             else:
-                print(f"Received unknown message type: {msg_type}")
+                log.warn(f"Received unknown message type: {msg_type}")
 
     def _handle_discover_msg(self, from_mac, body):
         pass

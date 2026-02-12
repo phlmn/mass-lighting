@@ -5,6 +5,7 @@ import espnow
 import os
 from array import array
 
+import log
 
 def read_setting(name: str, default_value: str | None = None):
     file_name = f"settings/{name}.txt"
@@ -80,20 +81,13 @@ class Com:
         return msg[0] == 0xCA and msg[1] == 0x70
 
     async def update_task(self):
-        # start_time = time.ticks_us()
-        # while time.ticks_diff(time.ticks_us(), start_time) < 5000: # invest around 5ms
-        # mac, msg = await self.e.airecv()
-
         async for mac, msg in self.e:
             if mac is None:
                 continue
 
-            # self.buffer[:] = msg
-
-            # time.sleep_ms(4)
             msg_mv = memoryview(msg)
 
-            # print("Received msg: ", msg.hex())
+            log.debug("Received msg: ", msg.hex())
 
             if not self._check_magic_bytes(msg_mv):
                 # just a package from another espnow application
@@ -124,7 +118,7 @@ class Com:
             elif msg_type == MsgType.DATA:
                 self._handle_data_msg(mac, msg_body)
             else:
-                print(f"Received unknown message type: {msg_type}")
+                log.warn(f"Received unknown message type: {msg_type}")
 
     def _handle_discover_msg(self, from_mac, body):
         pass
@@ -136,7 +130,7 @@ class Com:
         pass
 
     def _handle_data_msg(self, from_mac, body: memoryview[int]):
-        # print("Received data message: ", body.hex())
+        log.debug("Received data message: ", body.hex())
         d_from = int.from_bytes(body[:2])
         d_len = body[2]
         d_to = d_from + d_len - 1
