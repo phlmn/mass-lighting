@@ -3,8 +3,11 @@ import asyncio
 
 from com import Com
 from servo import Servo
+import log
 
-print("Initializing...")
+log.LOG_LEVEL = log.LogLevel.DEBUG
+
+log.info("Initializing...")
 
 async def main():
     com = Com("winkekatze_small")
@@ -26,7 +29,7 @@ async def main():
     # laser_eye_left = Pin(0, Pin.OUT)
     # laser_eye_right = Pin(0, Pin.OUT)
 
-    print("Running loop...")
+    log.info("Running loop...")
 
     servo_pos = channel_servo_body.value
 
