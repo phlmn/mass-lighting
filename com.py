@@ -1,3 +1,4 @@
+import asyncio
 import time
 import network
 import aioespnow
@@ -70,6 +71,8 @@ class Com:
         self.e.config(rate=espnow.RATE_LORA_250K)
         self.e.active(True)
         self.e.add_peer(self.broadcast_addr)
+
+        asyncio.create_task(self.update_task())
 
     def _broadcast(self, data):
         self.e.send(self.broadcast_addr, data, False)
